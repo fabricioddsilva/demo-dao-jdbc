@@ -13,8 +13,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 public class SellerDaoJDBC implements SellerDao {
@@ -64,6 +63,46 @@ public class SellerDaoJDBC implements SellerDao {
             } else {
                 return null;
             }
+
+        } catch (SQLException e){
+            throw new DBException(e.getMessage());
+        } finally {
+            DB.closeResultSet(rs);
+            DB.closeStatement(st);
+        }
+    }
+
+    public List<Seller> findByDepartment(Integer depId){
+        PreparedStatement st = null;
+        ResultSet rs = null;
+
+        try{
+            st = conn.prepareStatement(
+                    "SELECT "
+                            + "s.*, d.Name AS DepName "
+                            + "FROM seller s "
+                            + "INNER JOIN department d ON s.DepartmentId = d.Id "
+                            + "WHERE s.DepartmentId = ? "
+                            + "ORDER BY s.Name"
+            );
+
+            st.setInt(1, depId);
+
+            rs = st.executeQuery();
+
+            List<Seller> list = new ArrayList<>();
+
+            Map<Integer, Department> map = new HashMap<>();
+
+            while (rs.next()){
+                Department dep = map.get(rs.getInt("DepartmentId"));
+                if(dep == null){
+                    dep = instantiateDepartment(rs);
+                    map.put(depId, dep);
+                }
+                list.add(instantiateSeller(rs, dep));
+            }
+            return list;
 
         } catch (SQLException e){
             throw new DBException(e.getMessage());
