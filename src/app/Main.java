@@ -2,8 +2,10 @@ package app;
 
 import model.dao.DaoFactory;
 import model.dao.SellerDao;
+import model.entities.Department;
 import model.entities.Seller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class Main {
@@ -23,5 +25,16 @@ public class Main {
         System.out.println("===TESTE 3: Seller findAll===");
         sellers = sellerDao.findAll();
         sellers.forEach(System.out::println);
+        System.out.println();
+
+        System.out.println("===TESTE 4: Seller insert===");
+        Seller newSeller = new Seller(null,
+                "Greg",
+                "greg@gmail.com",
+                LocalDateTime.now(),
+                4000.0,
+                new Department(2, null));
+        sellerDao.insert(newSeller);
+        System.out.println("Inserido! Novo ID = " + newSeller.getId());
     }
 }
