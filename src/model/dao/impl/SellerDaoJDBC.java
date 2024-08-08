@@ -6,10 +6,7 @@ import model.dao.SellerDao;
 import model.entities.Department;
 import model.entities.Seller;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -112,6 +109,40 @@ public class SellerDaoJDBC implements SellerDao {
         }
     }
 
+    @Override
+    public List<Seller> findAll() {
+        Statement st = null;
+        ResultSet rs = null;
+
+        try{
+            st = conn.createStatement();
+
+            rs = st.executeQuery(
+                    "SELECT s.*, d.Name AS DepName "
+                    + "FROM Seller s "
+                    + "INNER JOIN department d ON s.DepartmentId = d.Id "
+                    + "ORDER BY s.name"
+            );
+
+            List<Seller> list = new ArrayList<>();
+
+            Map<Integer, Department> map = new HashMap<>();
+
+            while (rs.next()){
+                Department dep = map.get(rs.getInt("DepartmentId"));
+                if(dep == null){
+                    dep = instantiateDepartment(rs);
+                    map.put(rs.getInt("DepartmentId"), dep);
+                }
+                list.add(instantiateSeller(rs, dep));
+            }
+            return list;
+
+        } catch (SQLException e){
+            throw new DBException(e.getMessage());
+        }
+    }
+
     private Department instantiateDepartment(ResultSet rs) throws SQLException {
         Department dep = new Department();
         dep.setId(rs.getInt("DepartmentId"));
@@ -130,8 +161,5 @@ public class SellerDaoJDBC implements SellerDao {
         return seller;
     }
 
-    @Override
-    public List<Seller> findAll() {
-        return List.of();
-    }
+
 }
