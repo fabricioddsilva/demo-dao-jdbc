@@ -7,11 +7,13 @@ import model.entities.Seller;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-
         SellerDao sellerDao = DaoFactory.createSellerDao();
+        Scanner sc = new Scanner(System.in);
+
         System.out.println("===TESTE 1: Seller findById===");
         Seller seller = sellerDao.findById(3);
         System.out.println(seller);
@@ -27,27 +29,28 @@ public class Main {
         sellers.forEach(System.out::println);
         System.out.println();
 
-//        System.out.println("===TESTE 4: Seller insert===");
-//        Seller newSeller = new Seller(null,
-//                "Greg",
-//                "greg@gmail.com",
-//                LocalDateTime.now(),
-//                4000.0,
-//                new Department(2, null));
-//        sellerDao.insert(newSeller);
-//        System.out.println("Inserido! Novo ID = " + newSeller.getId());
-//        System.out.println();
-//
-//        System.out.println("===TESTE 5: Seller update===");
-//        seller = sellerDao.findById(1);
-//        seller.setName("Martha Waine");
-//        seller.setEmail("martha@gmail.com");
-//        sellerDao.update(seller);
-//        System.out.println("Atualizado com Sucesso!");
-//        System.out.println();
+        System.out.println("===TESTE 4: Seller insert===");
+        Seller newSeller = new Seller(null,
+                "Greg",
+                "greg@gmail.com",
+                LocalDateTime.now(),
+                4000.0,
+                new Department(2, null));
+        sellerDao.insert(newSeller);
+        System.out.println("Inserido! Novo ID = " + newSeller.getId());
+        System.out.println();
+
+        System.out.println("===TESTE 5: Seller update===");
+        seller = sellerDao.findById(1);
+        seller.setName("Martha Waine");
+        seller.setEmail("martha@gmail.com");
+        sellerDao.update(seller);
+        System.out.println("Atualizado com Sucesso!");
+        System.out.println();
 
         System.out.println("===TESTE 6: Seller delete===");
-        sellerDao.deleteById(13);
+        System.out.print("ID: ");
+        sellerDao.deleteById(sc.nextInt());
         System.out.println("Deletado com Sucesso!");
         System.out.println();
     }
